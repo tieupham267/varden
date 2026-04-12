@@ -1,0 +1,99 @@
+# Company Profile — used by AI to determine article relevance
+# Edit this file to match your actual environment.
+# The more specific, the better the AI can score relevance.
+
+company:
+  name: "Your Company Name"
+  sector:
+    - "financial_services"
+    - "banking"
+  country: "Vietnam"
+  size: "medium"  # small | medium | large | enterprise
+
+# Technology stack - products/vendors actively in use
+# These are matched against article content for relevance
+tech_stack:
+  operating_systems:
+    - "Windows Server 2022"
+    - "Windows Server 2019"
+    - "Ubuntu 22.04 LTS"
+    - "RHEL 9"
+
+  hypervisor:
+    - "VMware ESXi 8"
+    - "VMware vCenter 8"
+
+  network_security:
+    - "Fortinet FortiGate"
+    - "Fortinet FortiManager"
+    - "Cisco ASA"
+    - "Palo Alto PA-Series"
+
+  endpoint_security:
+    - "CrowdStrike Falcon"
+    - "Microsoft Defender for Endpoint"
+
+  identity:
+    - "Microsoft Active Directory"
+    - "Azure Active Directory"
+    - "Microsoft Entra ID"
+
+  productivity:
+    - "Microsoft 365"
+    - "Exchange Online"
+    - "SharePoint Online"
+    - "Microsoft Teams"
+
+  databases:
+    - "PostgreSQL 15"
+    - "Microsoft SQL Server 2019"
+    - "MongoDB 6"
+
+  web_servers:
+    - "nginx"
+    - "Apache Tomcat 9"
+    - "Apache HTTP Server"
+
+  dev_tools:
+    - "GitLab"
+    - "Jenkins"
+    - "Docker"
+    - "Kubernetes"
+
+  cloud:
+    - "AWS"
+    - "Microsoft Azure"
+
+# Threat actors to watch closely (usually based on sector + geography)
+watched_threat_actors:
+  - name: "Lazarus Group"
+    reason: "Targets financial sector in APAC"
+  - name: "APT32"
+    alias: "OceanLotus"
+    reason: "Vietnam-focused threat actor"
+  - name: "Mustang Panda"
+    reason: "Targets Southeast Asia"
+  - name: "Kimsuky"
+    reason: "Financial espionage, APAC"
+
+# MITRE ATT&CK techniques of highest concern (optional)
+# Use technique IDs - AI will prioritize articles mentioning these
+priority_techniques:
+  - "T1190"  # Exploit Public-Facing Application
+  - "T1566"  # Phishing
+  - "T1078"  # Valid Accounts
+  - "T1486"  # Data Encrypted for Impact (ransomware)
+  - "T1059"  # Command and Scripting Interpreter
+
+# Keywords that boost relevance score when present
+boost_keywords:
+  - "Vietnam"
+  - "Southeast Asia"
+  - "banking"
+  - "SWIFT"
+  - "ATM"
+
+# Keywords that reduce relevance score (noise filtering)
+reduce_keywords:
+  - "cryptocurrency mining"  # if not relevant to your sector
+  - "gaming industry"

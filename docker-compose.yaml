@@ -1,0 +1,51 @@
+services:
+  # ─── Oksskolten (the RSS reader) ───
+  # Reference the official Oksskolten compose.yaml for exact configuration.
+  # The key point: the data volume must be shared read-only with the sidecar.
+  oksskolten:
+    image: ghcr.io/babarot/oksskolten:latest  # adjust if different
+    container_name: oksskolten
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - oksskolten_data:/app/data    # <-- shared volume
+    environment:
+      # Your Oksskolten config here...
+      - DATABASE_URL=file:/app/data/oksskolten.db
+      # AI provider for Oksskolten's on-demand features (user-facing chat)
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+
+  # ─── Sidecar (this project) ───
+  varden:
+    build: .
+    container_name: varden
+    restart: unless-stopped
+    depends_on:
+      - oksskolten
+    env_file: .env
+    volumes:
+      # Own data dir (state DB, logs)
+      - ./data:/app/data
+      # Company profile (read-only)
+      - ./config:/app/config:ro
+      # SHARE Oksskolten's data volume READ-ONLY
+      # This lets the sidecar query Oksskolten's SQLite directly
+      - oksskolten_data:/oksskolten-data:ro
+    environment:
+      # Override path inside container
+      - OKSSKOLTEN_DB_PATH=/oksskolten-data/oksskolten.db
+    command: ["daemon"]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  oksskolten_data:
+    # If Oksskolten is already running with a different volume name,
+    # change this to match or use bind mount instead:
+    #
+    # volumes:
+    #   - /path/to/oksskolten/data:/app/data

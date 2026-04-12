@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Security Threat Intelligence Feeds</title>
+    <dateCreated>2026-04-11</dateCreated>
+    <ownerName>Varden / Oksskolten</ownerName>
+  </head>
+  <body>
+
+    <outline text="Threat Intel - News" title="Threat Intel - News">
+      <outline type="rss" text="Krebs on Security"
+               xmlUrl="https://krebsonsecurity.com/feed/"
+               htmlUrl="https://krebsonsecurity.com/"/>
+      <outline type="rss" text="The Hacker News"
+               xmlUrl="https://feeds.feedburner.com/TheHackersNews"
+               htmlUrl="https://thehackernews.com/"/>
+      <outline type="rss" text="BleepingComputer"
+               xmlUrl="https://www.bleepingcomputer.com/feed/"
+               htmlUrl="https://www.bleepingcomputer.com/"/>
+      <outline type="rss" text="Dark Reading"
+               xmlUrl="https://www.darkreading.com/rss.xml"
+               htmlUrl="https://www.darkreading.com/"/>
+      <outline type="rss" text="SecurityWeek"
+               xmlUrl="https://www.securityweek.com/feed/"
+               htmlUrl="https://www.securityweek.com/"/>
+      <outline type="rss" text="Security Affairs"
+               xmlUrl="https://securityaffairs.com/feed"
+               htmlUrl="https://securityaffairs.com/"/>
+      <outline type="rss" text="The Register - Security"
+               xmlUrl="https://www.theregister.com/security/headlines.atom"
+               htmlUrl="https://www.theregister.com/security/"/>
+      <outline type="rss" text="Hackread"
+               xmlUrl="https://www.hackread.com/feed/"
+               htmlUrl="https://www.hackread.com/"/>
+    </outline>
+
+    <outline text="Vulnerabilities - CVE" title="Vulnerabilities - CVE">
+      <outline type="rss" text="CISA Known Exploited Vulnerabilities"
+               xmlUrl="https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.xml"
+               htmlUrl="https://www.cisa.gov/known-exploited-vulnerabilities-catalog"/>
+      <outline type="rss" text="CISA Cybersecurity Advisories"
+               xmlUrl="https://www.cisa.gov/cybersecurity-advisories/all.xml"
+               htmlUrl="https://www.cisa.gov/news-events/cybersecurity-advisories"/>
+      <outline type="rss" text="NIST NVD - Recent CVEs"
+               xmlUrl="https://nvd.nist.gov/feeds/xml/cve/misc/nvd-rss-analyzed.xml"
+               htmlUrl="https://nvd.nist.gov/"/>
+      <outline type="rss" text="Zero Day Initiative"
+               xmlUrl="https://www.zerodayinitiative.com/rss/published/"
+               htmlUrl="https://www.zerodayinitiative.com/"/>
+    </outline>
+
+    <outline text="Vendor Advisories" title="Vendor Advisories">
+      <outline type="rss" text="Microsoft Security Response Center"
+               xmlUrl="https://msrc.microsoft.com/blog/feed"
+               htmlUrl="https://msrc.microsoft.com/blog"/>
+      <outline type="rss" text="Microsoft Security Blog"
+               xmlUrl="https://www.microsoft.com/en-us/security/blog/feed/"
+               htmlUrl="https://www.microsoft.com/security/blog/"/>
+      <outline type="rss" text="Fortinet PSIRT Advisories"
+               xmlUrl="https://filestore.fortinet.com/fortiguard/rss/ir.xml"
+               htmlUrl="https://www.fortiguard.com/psirt"/>
+      <outline type="rss" text="Cisco Security Advisories"
+               xmlUrl="https://sec.cloudapps.cisco.com/security/center/psirtrss20/CiscoSecurityAdvisory.xml"
+               htmlUrl="https://sec.cloudapps.cisco.com/security/center/publicationListing.x"/>
+      <outline type="rss" text="VMware Security Advisories"
+               xmlUrl="https://www.vmware.com/security/advisories.xml"
+               htmlUrl="https://www.vmware.com/security/advisories.html"/>
+      <outline type="rss" text="Palo Alto PSIRT"
+               xmlUrl="https://security.paloaltonetworks.com/rss.xml"
+               htmlUrl="https://security.paloaltonetworks.com/"/>
+    </outline>
+
+    <outline text="APT Research - Vendors" title="APT Research - Vendors">
+      <outline type="rss" text="Mandiant Blog"
+               xmlUrl="https://www.mandiant.com/resources/blog/rss.xml"
+               htmlUrl="https://www.mandiant.com/resources/blog"/>
+      <outline type="rss" text="CrowdStrike Blog"
+               xmlUrl="https://www.crowdstrike.com/blog/feed/"
+               htmlUrl="https://www.crowdstrike.com/blog/"/>
+      <outline type="rss" text="Google TAG (Threat Analysis Group)"
+               xmlUrl="https://blog.google/threat-analysis-group/rss/"
+               htmlUrl="https://blog.google/threat-analysis-group/"/>
+      <outline type="rss" text="Microsoft Threat Intelligence"
+               xmlUrl="https://www.microsoft.com/en-us/security/blog/topic/threat-intelligence/feed/"
+               htmlUrl="https://www.microsoft.com/security/blog/topic/threat-intelligence/"/>
+      <outline type="rss" text="Kaspersky Securelist"
+               xmlUrl="https://securelist.com/feed/"
+               htmlUrl="https://securelist.com/"/>
+      <outline type="rss" text="Cisco Talos Intelligence"
+               xmlUrl="https://blog.talosintelligence.com/rss/"
+               htmlUrl="https://blog.talosintelligence.com/"/>
+      <outline type="rss" text="Palo Alto Unit 42"
+               xmlUrl="https://unit42.paloaltonetworks.com/feed/"
+               htmlUrl="https://unit42.paloaltonetworks.com/"/>
+      <outline type="rss" text="Trend Micro Research"
+               xmlUrl="https://www.trendmicro.com/en_us/research.rss"
+               htmlUrl="https://www.trendmicro.com/en_us/research.html"/>
+      <outline type="rss" text="ESET WeLiveSecurity"
+               xmlUrl="https://www.welivesecurity.com/en/rss/feed/"
+               htmlUrl="https://www.welivesecurity.com/"/>
+      <outline type="rss" text="Check Point Research"
+               xmlUrl="https://research.checkpoint.com/feed/"
+               htmlUrl="https://research.checkpoint.com/"/>
+    </outline>
+
+    <outline text="DFIR - Incident Response" title="DFIR - Incident Response">
+      <outline type="rss" text="The DFIR Report"
+               xmlUrl="https://thedfirreport.com/feed/"
+               htmlUrl="https://thedfirreport.com/"/>
+      <outline type="rss" text="SANS Internet Storm Center"
+               xmlUrl="https://isc.sans.edu/rssfeed.xml"
+               htmlUrl="https://isc.sans.edu/"/>
+      <outline type="rss" text="Malwarebytes Labs"
+               xmlUrl="https://www.malwarebytes.com/blog/feed/index.xml"
+               htmlUrl="https://www.malwarebytes.com/blog"/>
+      <outline type="rss" text="Hexacorn Blog"
+               xmlUrl="https://www.hexacorn.com/blog/feed/"
+               htmlUrl="https://www.hexacorn.com/blog/"/>
+    </outline>
+
+    <outline text="Security Research - Offensive" title="Security Research - Offensive">
+      <outline type="rss" text="Google Project Zero"
+               xmlUrl="https://googleprojectzero.blogspot.com/feeds/posts/default"
+               htmlUrl="https://googleprojectzero.blogspot.com/"/>
+      <outline type="rss" text="PortSwigger Research"
+               xmlUrl="https://portswigger.net/research/rss"
+               htmlUrl="https://portswigger.net/research"/>
+      <outline type="rss" text="Packet Storm Security"
+               xmlUrl="https://packetstormsecurity.com/headlines.xml"
+               htmlUrl="https://packetstormsecurity.com/"/>
+    </outline>
+
+    <outline text="Vietnam / APAC" title="Vietnam / APAC">
+      <outline type="rss" text="VNCERT/CC"
+               xmlUrl="https://vncert.gov.vn/rss"
+               htmlUrl="https://vncert.gov.vn/"/>
+      <outline type="rss" text="JPCERT/CC English"
+               xmlUrl="https://www.jpcert.or.jp/english/rss/jpcert-en.rdf"
+               htmlUrl="https://www.jpcert.or.jp/english/"/>
+      <outline type="rss" text="AusCERT"
+               xmlUrl="https://www.auscert.org.au/bulletins/rss/"
+               htmlUrl="https://www.auscert.org.au/"/>
+    </outline>
+
+  </body>
+</opml>
