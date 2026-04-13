@@ -85,21 +85,21 @@ Set `OKSSKOLTEN_MODE=api` in `.env`. Less reliable because API endpoints may dif
 
 ```bash
 docker compose up -d
-
-# Test one cycle
-docker compose run --rm sidecar run
-
-# Check status
-docker compose run --rm sidecar status
 ```
 
 ## Commands
 
 ```bash
-python main.py run        # Single cycle (for testing)
-python main.py daemon     # Scheduled daemon (production)
-python main.py digest     # Send email digest of last 24h
-python main.py status     # Show recent analyses
+# Docker (production)
+docker exec varden python main.py run        # On-demand: trigger one cycle now
+docker exec varden python main.py status     # Show recent analyses
+docker exec varden python main.py digest     # Send email digest for last 24h
+
+# Local development
+python main.py run        # Single cycle
+python main.py daemon     # Scheduled daemon
+python main.py digest     # Email digest of last 24h
+python main.py status     # Show current state
 ```
 
 ## How it works

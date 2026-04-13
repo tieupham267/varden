@@ -92,6 +92,10 @@ boost_keywords:
   - "banking"
   - "SWIFT"
   - "ATM"
+  - "data breach"
+  - "breach"
+  - "incident response"
+  - "lessons learned"
 
 # Keywords that reduce relevance score (noise filtering)
 reduce_keywords:
