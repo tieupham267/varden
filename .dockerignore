@@ -6,12 +6,9 @@ data/
 .venv/
 venv/
 *.log
-tests/
 docs/
 CLAUDE.md
 README.md
-varden-README.md
-pytest.ini
-requirements-test.txt
-security-feeds.opml
 .claude/
+.coverage
+.pytest_cache/

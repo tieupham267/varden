@@ -129,10 +129,16 @@ class OksskoltenSource:
             "created_col": find_col("created_at", "fetched_at", "inserted_at"),
         }
 
-        # Find feeds table for feed name lookup
+        # Find feeds table and its name column for feed name lookup
         for feed_candidate in ["feeds", "feed", "subscriptions"]:
             if feed_candidate in tables:
                 schema["feeds_table"] = feed_candidate
+                feed_cols_cursor = conn.execute(f"PRAGMA table_info({feed_candidate})")
+                feed_columns = [row[1] for row in feed_cols_cursor.fetchall()]
+                for name_candidate in ["name", "title", "feed_name"]:
+                    if name_candidate in feed_columns:
+                        schema["feed_name_col"] = name_candidate
+                        break
                 break
 
         # Validate all discovered identifiers against injection
@@ -179,8 +185,8 @@ class OksskoltenSource:
             # Join with feeds table if available
             feed_name_expr = "'Unknown' as feed_name"
             join_clause = ""
-            if schema.get("feeds_table") and schema.get("feed_id_col"):
-                feed_name_expr = "f.title as feed_name"
+            if schema.get("feeds_table") and schema.get("feed_id_col") and schema.get("feed_name_col"):
+                feed_name_expr = f"f.{schema['feed_name_col']} as feed_name"
                 join_clause = (
                     f" LEFT JOIN {schema['feeds_table']} f "
                     f"ON a.{schema['feed_id_col']} = f.id"
