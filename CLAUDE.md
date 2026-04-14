@@ -14,12 +14,14 @@ pip install -r requirements.txt
 python main.py run          # Single analysis cycle (testing)
 python main.py daemon       # Scheduled polling (production)
 python main.py digest       # Email digest of last 24h
-python main.py status       # Show recent analyses
+python main.py status       # Show recent analyses + balance
+python main.py balance      # Check AI provider balance
 
 # Docker
 docker compose up -d
-docker compose run --rm sidecar run       # Test one cycle
-docker compose run --rm sidecar status    # Check state
+docker exec varden python main.py run       # On-demand cycle
+docker exec varden python main.py status    # Check state + balance
+docker exec varden python main.py balance   # Check balance
 docker compose logs -f varden             # Monitor logs
 ```
 
@@ -49,7 +51,8 @@ RSS feeds → Oksskolten (fetch/dedup/extract)
 - **`src/state.py`** — aiosqlite-based local state: cursor position, analysis cache, alert dedup tracking.
 - **`src/ai_analyzer.py`** — Multi-provider LLM orchestration (Anthropic/DeepSeek/OpenAI-compatible). Builds Vietnamese-language prompts with company context from `config/company_profile.yaml`. Returns structured JSON: relevance_score, severity, summary_vi, CVEs, MITRE ATT&CK, recommendations.
 - **`src/notifier.py`** — Telegram (HTML), Slack (blocks), Email (SMTP/HTML digest). All three can run simultaneously.
-- **`src/pipeline.py`** — Orchestrator tying source → analyzer → state → notifier. ~60 lines.
+- **`src/balance.py`** — AI provider balance monitoring. Checks remaining credits (DeepSeek supported), alerts via Telegram when low. Runs after each pipeline cycle.
+- **`src/pipeline.py`** — Orchestrator tying source → analyzer → state → notifier → balance check.
 
 ## Configuration
 

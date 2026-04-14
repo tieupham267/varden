@@ -75,6 +75,11 @@ def format_telegram_message(article: dict, analysis: dict) -> str:
         if techs:
             lines.append(f"⚔️ MITRE: {', '.join(techs)}")
 
+    # Fraud typology
+    typology = analysis.get("fraud_typology", [])
+    if typology:
+        lines.append(f"🎭 Fraud: {', '.join(typology[:4])}")
+
     # Recommendations
     recs = analysis.get("recommendations", [])
     if recs:

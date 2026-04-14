@@ -50,6 +50,14 @@ async def init_state_db():
                 ON analyzed_articles(relevance_score);
             CREATE INDEX IF NOT EXISTS idx_analyzed_time
                 ON analyzed_articles(analyzed_at);
+
+            CREATE TABLE IF NOT EXISTS feed_error_alerts (
+                feed_id INTEGER PRIMARY KEY,
+                feed_name TEXT,
+                last_error TEXT,
+                error_count INTEGER,
+                alerted_at TEXT NOT NULL
+            );
         """)
         await db.commit()
 
@@ -136,3 +144,48 @@ async def get_recent_analyses(hours: int = 24, limit: int = 100) -> list[dict]:
         )
         rows = await cursor.fetchall()
         return [dict(row) for row in rows]
+
+
+# ── Feed error alert dedup ──────────────────────────────────────────
+
+
+async def get_feed_alert(feed_id: int) -> Optional[dict]:
+    """Get previously-alerted error for a feed, or None."""
+    async with aiosqlite.connect(STATE_DB) as db:
+        db.row_factory = aiosqlite.Row
+        cursor = await db.execute(
+            "SELECT * FROM feed_error_alerts WHERE feed_id = ?",
+            (feed_id,),
+        )
+        row = await cursor.fetchone()
+        return dict(row) if row else None
+
+
+async def save_feed_alert(
+    feed_id: int, feed_name: str, last_error: str, error_count: int
+) -> None:
+    """Record that we alerted for this feed error."""
+    async with aiosqlite.connect(STATE_DB) as db:
+        await db.execute(
+            """INSERT OR REPLACE INTO feed_error_alerts
+               (feed_id, feed_name, last_error, error_count, alerted_at)
+               VALUES (?, ?, ?, ?, ?)""",
+            (
+                feed_id,
+                feed_name,
+                last_error,
+                error_count,
+                datetime.now(timezone.utc).isoformat(),
+            ),
+        )
+        await db.commit()
+
+
+async def clear_feed_alert(feed_id: int) -> None:
+    """Remove alert record when feed recovers."""
+    async with aiosqlite.connect(STATE_DB) as db:
+        await db.execute(
+            "DELETE FROM feed_error_alerts WHERE feed_id = ?",
+            (feed_id,),
+        )
+        await db.commit()

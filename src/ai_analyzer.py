@@ -79,38 +79,50 @@ def build_company_context_text(profile: dict) -> str:
     return "\n\n".join(parts)
 
 
-SYSTEM_PROMPT_TEMPLATE = """Bạn là một AI Security Analyst chuyên phân tích threat intelligence cho một công ty cụ thể.
+SYSTEM_PROMPT_TEMPLATE = """Bạn là một AI Security Analyst chuyên phân tích threat intelligence VÀ fraud intelligence cho một công ty cụ thể.
 
 COMPANY CONTEXT:
 {company_context}
 
 NHIỆM VỤ:
-Đọc bài viết bảo mật và đánh giá MỨC ĐỘ LIÊN QUAN đến công ty trên.
+Đọc bài viết và đánh giá MỨC ĐỘ LIÊN QUAN đến công ty trên. Bài viết có thể là:
+(a) Technical threat intel: CVE, vulnerability, malware, APT, exploit
+(b) Fraud intelligence: lừa đảo tài chính, social engineering, biometric bypass, account takeover, SIM swap, phishing campaign, investment scam
+
+Cả hai loại đều quan trọng với công ty fintech/banking. Phân tích theo loại phù hợp.
 
 QUY TẮC:
 1. relevance_score (0-10):
-   - 9-10: Trực tiếp ảnh hưởng tech stack của công ty, cần hành động ngay
-   - 7-8: Có liên quan rõ ràng (sản phẩm/vendor đang dùng, threat actor đang theo dõi)
-   - 5-6: Liên quan gián tiếp (sector, geography, hoặc technique ưu tiên)
+   - 9-10: Trực tiếp ảnh hưởng
+     * Threat intel: 0-day/CVE trong tech stack, APT nhắm mục tiêu công ty
+     * Fraud: Chiến dịch lừa đảo đang nhắm vào khách hàng của ngành/khu vực, kỹ thuật bypass kiểm soát đang dùng (OTP, sinh trắc học)
+   - 7-8: Liên quan rõ ràng
+     * Threat intel: Vendor đang dùng, threat actor trong watchlist
+     * Fraud: Typology mới áp dụng cho sector/khu vực, incident ở ngân hàng VN/ASEAN
+   - 5-6: Liên quan gián tiếp (sector, geography, technique ưu tiên, fraud typology chung)
    - 3-4: Tin tức chung trong ngành, cần theo dõi
    - 0-2: Không liên quan
 
-2. severity (dựa trên threat itself, không phụ thuộc relevance):
-   - critical: 0-day đang bị khai thác tích cực
-   - high: PoC exploit, vuln nghiêm trọng, breach lớn
-   - medium: Advisory quan trọng, threat đáng chú ý
-   - low: Tham khảo, không khẩn cấp
+2. severity (dựa trên tác động thực tế, áp dụng cho cả threat intel và fraud):
+   - critical: 0-day đang bị khai thác tích cực, HOẶC chiến dịch fraud quy mô lớn đang nhắm vào sector/khu vực
+   - high: PoC exploit, vuln nghiêm trọng, breach lớn, HOẶC kỹ thuật fraud mới đang được triển khai active
+   - medium: Advisory quan trọng, HOẶC vụ fraud lẻ có impact đáng chú ý
+   - low: Tham khảo, cảnh báo chung về fraud awareness
    - info: Tin tổng hợp, ý kiến
 
-3. summary_vi: Tóm tắt tiếng Việt 2-4 câu, tập trung vào impact với công ty.
+3. summary_vi: Tóm tắt tiếng Việt 2-4 câu. Với fraud, nêu rõ: thủ đoạn, nạn nhân, thiệt hại, kênh/kiểm soát bị vượt qua.
 
-4. relevance_reason: Giải thích NGẮN (1-2 câu) tại sao cho điểm đó. Phải đề cập cụ thể tech/actor nếu match.
+4. relevance_reason: Giải thích NGẮN (1-2 câu) tại sao cho điểm đó. Reference cụ thể tech/actor/fraud typology nếu match.
 
-5. mitre_attack: Chỉ map khi bài viết mô tả rõ ràng technique. Format: [{{"tactic": "TA00xx - Name", "technique": "Txxxx - Name"}}]
+5. mitre_attack: Chỉ map khi bài viết mô tả rõ ràng technique. Có thể empty với fraud articles không thuộc ATT&CK. Format: [{{"tactic": "TA00xx - Name", "technique": "Txxxx - Name"}}]
 
-6. recommendations: 1-3 hành động cụ thể cho SOC team của công ty (không chung chung).
+6. fraud_typology: Chỉ điền khi bài viết là về fraud. Các giá trị: ["account_takeover", "phishing", "smishing", "vishing", "biometric_bypass", "otp_bypass", "sim_swap", "social_engineering", "investment_scam", "impersonation_scam", "money_mule", "card_fraud", "insider_fraud", "merchant_fraud", "promotion_abuse", "refund_fraud"]. Empty nếu không phải fraud.
 
-7. cve_ids, affected_products, threat_actors: extract nếu có.
+7. recommendations: 1-3 hành động cụ thể:
+   - Threat intel: patch, detection rule, IOC hunting
+   - Fraud: detection logic, velocity rule, customer awareness, policy update, step-up verification
+
+8. cve_ids, affected_products, threat_actors: extract nếu có. Có thể empty với fraud articles.
 
 LUÔN trả về JSON hợp lệ, KHÔNG wrap trong markdown code block."""
 
@@ -130,13 +142,14 @@ USER_PROMPT_TEMPLATE = """Phân tích bài viết sau:
 Trả về JSON:
 {{
   "relevance_score": 0-10,
-  "relevance_reason": "Tại sao cho điểm này, reference cụ thể tech/actor",
+  "relevance_reason": "Tại sao cho điểm này, reference cụ thể tech/actor/fraud typology",
   "severity": "critical|high|medium|low|info",
   "summary_vi": "Tóm tắt tiếng Việt 2-4 câu",
   "cve_ids": ["CVE-YYYY-NNNNN"],
   "affected_products": ["product1"],
   "threat_actors": ["actor1"],
   "mitre_attack": [{{"tactic": "TA00xx - Name", "technique": "Txxxx - Name"}}],
+  "fraud_typology": ["phishing", "biometric_bypass"],
   "recommendations": ["action 1", "action 2"]
 }}"""
 
@@ -216,6 +229,7 @@ class AIAnalyzer:
         result.setdefault("affected_products", [])
         result.setdefault("threat_actors", [])
         result.setdefault("mitre_attack", [])
+        result.setdefault("fraud_typology", [])
         result.setdefault("recommendations", [])
 
         # Clamp relevance score

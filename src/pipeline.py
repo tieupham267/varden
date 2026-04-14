@@ -13,6 +13,8 @@ import logging
 import os
 
 from src.ai_analyzer import AIAnalyzer
+from src.balance import check_and_alert as check_balance_alert
+from src.feed_health import check_and_alert as check_feed_health
 from src.notifier import dispatch_alert
 from src.source import OksskoltenSource
 from src.state import (
@@ -124,3 +126,9 @@ class Pipeline:
             f"alerted={stats['alerted']}, skipped={stats['skipped']}, "
             f"failed={stats['failed']}"
         )
+
+        # Check provider balance after processing
+        await check_balance_alert(os.getenv("AI_PROVIDER", "anthropic").lower())
+
+        # Check Oksskolten feed health
+        await check_feed_health()

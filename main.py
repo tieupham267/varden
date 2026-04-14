@@ -145,6 +145,72 @@ async def cmd_status():
             print(f"  [{sev:<8}] {score}/10  {title}")
     print()
 
+    # Show balance if supported
+    from src.balance import check_balance
+    provider = os.getenv("AI_PROVIDER", "anthropic").lower()
+    info = await check_balance(provider)
+    if info:
+        status = "OK" if info["is_available"] else "UNAVAILABLE"
+        print(f"AI Provider: {provider} [{status}]")
+        print(f"Balance: {info['balance']:.2f} {info['currency']}")
+    else:
+        print(f"AI Provider: {provider} (balance check not supported)")
+    print()
+
+
+async def cmd_feeds():
+    """Check Oksskolten feed health."""
+    await init_state_db()
+    from src.feed_health import check_and_alert, get_failing_feeds
+
+    db_path = os.getenv("OKSSKOLTEN_DB_PATH", "/oksskolten-data/oksskolten.db")
+    threshold = int(os.getenv("FEED_ERROR_THRESHOLD", "3"))
+    failing = await get_failing_feeds(db_path, threshold)
+
+    print(f"\n=== Feed Health ===")
+    print(f"Threshold: {threshold} errors")
+    print(f"Failing feeds: {len(failing)}")
+    print()
+
+    if failing:
+        print(f"{'Feed':<35} {'Errors':<8} {'Last error':<50}")
+        print("-" * 95)
+        for f in failing:
+            name = (f["name"] or "")[:33]
+            err = (f["last_error"] or "")[:48]
+            print(f"{name:<35} {f['error_count']:<8} {err}")
+        print()
+
+    # Run alert check (will send Telegram if new errors)
+    stats = await check_and_alert()
+    print(f"New alerts sent: {stats['new_alerts']}")
+    print(f"Recovered feeds: {stats['recovered']}")
+    print()
+
+
+async def cmd_balance():
+    """Check and display AI provider balance."""
+    from src.balance import check_balance
+    provider = os.getenv("AI_PROVIDER", "anthropic").lower()
+    info = await check_balance(provider)
+
+    if not info:
+        print(f"Balance check not supported for provider: {provider}")
+        print("Supported: deepseek")
+        return
+
+    status = "OK" if info["is_available"] else "UNAVAILABLE"
+    threshold = float(os.getenv("BALANCE_ALERT_THRESHOLD", "2"))
+    print(f"\n=== {provider.upper()} Balance ===")
+    print(f"Status:    {status}")
+    print(f"Balance:   {info['balance']:.2f} {info['currency']}")
+    print(f"Threshold: {threshold:.2f} {info['currency']}")
+    if info["balance"] < threshold:
+        print(f"⚠️  LOW BALANCE — below threshold!")
+    else:
+        print(f"✓  Balance OK")
+    print()
+
 
 BANNER = r"""
    __      __            _
@@ -164,6 +230,8 @@ Usage:
   python main.py daemon     Run as scheduled daemon (production)
   python main.py digest     Send email digest for last 24h
   python main.py status     Show current state and recent analyses
+  python main.py balance    Check AI provider balance
+  python main.py feeds      Check Oksskolten feed health (fetch errors)
 """)
 
 
@@ -178,6 +246,8 @@ async def main():
         "daemon": cmd_daemon,
         "digest": cmd_digest,
         "status": cmd_status,
+        "balance": cmd_balance,
+        "feeds": cmd_feeds,
     }
 
     if command in commands:

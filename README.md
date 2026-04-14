@@ -92,14 +92,16 @@ docker compose up -d
 ```bash
 # Docker (production)
 docker exec varden python main.py run        # On-demand: trigger one cycle now
-docker exec varden python main.py status     # Show recent analyses
+docker exec varden python main.py status     # Show recent analyses + balance
+docker exec varden python main.py balance    # Check AI provider balance
 docker exec varden python main.py digest     # Send email digest for last 24h
 
 # Local development
 python main.py run        # Single cycle
 python main.py daemon     # Scheduled daemon
 python main.py digest     # Email digest of last 24h
-python main.py status     # Show current state
+python main.py status     # Show current state + balance
+python main.py balance    # Check AI provider balance
 ```
 
 ## How it works
@@ -174,6 +176,22 @@ Increase `ALERT_THRESHOLD` in `.env` (default 7, try 8 or 9). Or narrow `ALERT_S
 ### Too few alerts
 
 Check if company profile is too narrow. The AI matches articles against tech stack — if your stack list is empty, nothing will score high.
+
+## Balance monitoring
+
+Varden can monitor your AI provider balance and alert via Telegram when it's low. Set in `.env`:
+
+```bash
+BALANCE_ALERT_THRESHOLD=2    # Alert when balance drops below this amount
+```
+
+Currently supported: **DeepSeek**. Other providers don't expose balance APIs.
+
+In daemon mode, balance is checked after every cycle. You can also check manually:
+
+```bash
+docker exec varden python main.py balance
+```
 
 ## Cost estimate
 

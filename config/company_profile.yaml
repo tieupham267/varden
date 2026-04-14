@@ -96,6 +96,20 @@ boost_keywords:
   - "breach"
   - "incident response"
   - "lessons learned"
+  # Fraud & financial crime
+  - "fraud"
+  - "scam"
+  - "lừa đảo"
+  - "chiếm đoạt"
+  - "sinh trắc học"
+  - "biometric bypass"
+  - "OTP bypass"
+  - "SIM swap"
+  - "account takeover"
+  - "phishing"
+  - "social engineering"
+  - "money laundering"
+  - "rửa tiền"
 
 # Keywords that reduce relevance score (noise filtering)
 reduce_keywords:

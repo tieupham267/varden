@@ -1,5 +1,16 @@
 
 services:
+  # ─── MeiliSearch (full-text search for Oksskolten) ───
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: meilisearch
+    restart: unless-stopped
+    environment:
+      - MEILI_ENV=production
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-changeme-in-production}
+    volumes:
+      - meilisearch_data:/meili_data
+
   # ─── Oksskolten (the RSS reader) ───
   # Reference the official Oksskolten compose.yaml for exact configuration.
   # The key point: the data volume must be shared read-only with the sidecar.
@@ -9,11 +20,16 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    depends_on:
+      - meilisearch
     volumes:
       - oksskolten_data:/app/data    # <-- shared volume
     environment:
       # Your Oksskolten config here...
       - DATABASE_URL=file:/app/data/oksskolten.db
+      # MeiliSearch for article full-text search
+      - MEILI_URL=http://meilisearch:7700
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-changeme-in-production}
       # AI provider for Oksskolten's on-demand features (user-facing chat)
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
 
@@ -50,3 +66,4 @@ volumes:
     #
     # volumes:
     #   - /path/to/oksskolten/data:/app/data
+  meilisearch_data:

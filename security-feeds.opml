@@ -35,9 +35,6 @@
     </outline>
 
     <outline text="Vulnerabilities - CVE" title="Vulnerabilities - CVE">
-      <outline type="rss" text="CISA Known Exploited Vulnerabilities"
-               xmlUrl="https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.xml"
-               htmlUrl="https://www.cisa.gov/known-exploited-vulnerabilities-catalog"/>
       <outline type="rss" text="CISA Cybersecurity Advisories"
                xmlUrl="https://www.cisa.gov/cybersecurity-advisories/all.xml"
                htmlUrl="https://www.cisa.gov/news-events/cybersecurity-advisories"/>
@@ -51,8 +48,8 @@
 
     <outline text="Vendor Advisories" title="Vendor Advisories">
       <outline type="rss" text="Microsoft Security Response Center"
-               xmlUrl="https://msrc.microsoft.com/blog/feed"
-               htmlUrl="https://msrc.microsoft.com/blog"/>
+               xmlUrl="https://api.msrc.microsoft.com/update-guide/rss"
+               htmlUrl="https://msrc.microsoft.com/update-guide"/>
       <outline type="rss" text="Microsoft Security Blog"
                xmlUrl="https://www.microsoft.com/en-us/security/blog/feed/"
                htmlUrl="https://www.microsoft.com/security/blog/"/>
@@ -62,9 +59,9 @@
       <outline type="rss" text="Cisco Security Advisories"
                xmlUrl="https://sec.cloudapps.cisco.com/security/center/psirtrss20/CiscoSecurityAdvisory.xml"
                htmlUrl="https://sec.cloudapps.cisco.com/security/center/publicationListing.x"/>
-      <outline type="rss" text="VMware Security Advisories"
-               xmlUrl="https://www.vmware.com/security/advisories.xml"
-               htmlUrl="https://www.vmware.com/security/advisories.html"/>
+      <outline type="rss" text="VMware Security Blog"
+               xmlUrl="https://blogs.vmware.com/security/feed"
+               htmlUrl="https://blogs.vmware.com/security/"/>
       <outline type="rss" text="Palo Alto PSIRT"
                xmlUrl="https://security.paloaltonetworks.com/rss.xml"
                htmlUrl="https://security.paloaltonetworks.com/"/>
@@ -93,7 +90,7 @@
                xmlUrl="https://unit42.paloaltonetworks.com/feed/"
                htmlUrl="https://unit42.paloaltonetworks.com/"/>
       <outline type="rss" text="Trend Micro Research"
-               xmlUrl="https://www.trendmicro.com/en_us/research.rss"
+               xmlUrl="https://feeds.feedburner.com/TrendMicroResearch"
                htmlUrl="https://www.trendmicro.com/en_us/research.html"/>
       <outline type="rss" text="ESET WeLiveSecurity"
                xmlUrl="https://www.welivesecurity.com/en/rss/feed/"
@@ -125,21 +122,72 @@
       <outline type="rss" text="PortSwigger Research"
                xmlUrl="https://portswigger.net/research/rss"
                htmlUrl="https://portswigger.net/research"/>
-      <outline type="rss" text="Packet Storm Security"
-               xmlUrl="https://packetstormsecurity.com/headlines.xml"
-               htmlUrl="https://packetstormsecurity.com/"/>
     </outline>
 
     <outline text="Vietnam / APAC" title="Vietnam / APAC">
-      <outline type="rss" text="VNCERT/CC"
-               xmlUrl="https://vncert.gov.vn/rss"
-               htmlUrl="https://vncert.gov.vn/"/>
       <outline type="rss" text="JPCERT/CC English"
                xmlUrl="https://www.jpcert.or.jp/english/rss/jpcert-en.rdf"
                htmlUrl="https://www.jpcert.or.jp/english/"/>
-      <outline type="rss" text="AusCERT"
-               xmlUrl="https://www.auscert.org.au/bulletins/rss/"
-               htmlUrl="https://www.auscert.org.au/"/>
+    </outline>
+
+    <outline text="Fraud - Vietnam News" title="Fraud - Vietnam News">
+      <outline type="rss" text="VNExpress - Pháp luật"
+               xmlUrl="https://vnexpress.net/rss/phap-luat.rss"
+               htmlUrl="https://vnexpress.net/phap-luat"/>
+      <outline type="rss" text="VNExpress - Khoa học công nghệ"
+               xmlUrl="https://vnexpress.net/rss/khoa-hoc-cong-nghe.rss"
+               htmlUrl="https://vnexpress.net/khoa-hoc-cong-nghe"/>
+      <outline type="rss" text="VNExpress - Kinh doanh"
+               xmlUrl="https://vnexpress.net/rss/kinh-doanh.rss"
+               htmlUrl="https://vnexpress.net/kinh-doanh"/>
+      <outline type="rss" text="Tuổi Trẻ - Pháp luật"
+               xmlUrl="https://tuoitre.vn/rss/phap-luat.rss"
+               htmlUrl="https://tuoitre.vn/phap-luat.htm"/>
+      <outline type="rss" text="Tuổi Trẻ - Nhịp sống số"
+               xmlUrl="https://tuoitre.vn/rss/nhip-song-so.rss"
+               htmlUrl="https://tuoitre.vn/nhip-song-so.htm"/>
+      <outline type="rss" text="Tuổi Trẻ - Kinh doanh"
+               xmlUrl="https://tuoitre.vn/rss/kinh-doanh.rss"
+               htmlUrl="https://tuoitre.vn/kinh-doanh.htm"/>
+      <outline type="rss" text="Thanh Niên - Pháp luật"
+               xmlUrl="https://thanhnien.vn/rss/thoi-su/phap-luat.rss"
+               htmlUrl="https://thanhnien.vn/thoi-su/phap-luat/"/>
+      <outline type="rss" text="Thanh Niên - Công nghệ"
+               xmlUrl="https://thanhnien.vn/rss/cong-nghe.rss"
+               htmlUrl="https://thanhnien.vn/cong-nghe/"/>
+      <outline type="rss" text="Thanh Niên - Ngân hàng"
+               xmlUrl="https://thanhnien.vn/rss/kinh-te/ngan-hang.rss"
+               htmlUrl="https://thanhnien.vn/kinh-te/ngan-hang/"/>
+      <outline type="rss" text="Pháp Luật TP.HCM - Pháp luật"
+               xmlUrl="https://plo.vn/rss/phap-luat-163.rss"
+               htmlUrl="https://plo.vn/phap-luat/"/>
+      <outline type="rss" text="Pháp Luật TP.HCM - Kinh tế"
+               xmlUrl="https://plo.vn/rss/kinh-te-13.rss"
+               htmlUrl="https://plo.vn/kinh-te/"/>
+      <outline type="rss" text="VietnamNet - Pháp luật"
+               xmlUrl="https://vietnamnet.vn/phap-luat.rss"
+               htmlUrl="https://vietnamnet.vn/phap-luat"/>
+      <outline type="rss" text="VietnamNet - Công nghệ"
+               xmlUrl="https://vietnamnet.vn/cong-nghe.rss"
+               htmlUrl="https://vietnamnet.vn/cong-nghe"/>
+      <outline type="rss" text="Công an Nhân dân (CAND)"
+               xmlUrl="https://cand.com.vn/rssfeed/"
+               htmlUrl="https://cand.com.vn/"/>
+    </outline>
+
+    <outline text="Fraud - International" title="Fraud - International">
+      <outline type="rss" text="The Record (Recorded Future)"
+               xmlUrl="https://therecord.media/feed"
+               htmlUrl="https://therecord.media/"/>
+      <outline type="rss" text="PaymentsJournal"
+               xmlUrl="https://www.paymentsjournal.com/feed/"
+               htmlUrl="https://www.paymentsjournal.com/"/>
+      <outline type="rss" text="Help Net Security"
+               xmlUrl="https://www.helpnetsecurity.com/feed/"
+               htmlUrl="https://www.helpnetsecurity.com/"/>
+      <outline type="rss" text="Forter Blog"
+               xmlUrl="https://www.forter.com/feed/"
+               htmlUrl="https://www.forter.com/blog/"/>
     </outline>
 
   </body>
