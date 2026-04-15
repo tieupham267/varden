@@ -188,6 +188,29 @@ async def cmd_feeds():
     print()
 
 
+async def cmd_dedup_metrics():
+    """Compute and print dedup shadow log metrics."""
+    await init_state_db()
+    from src.metrics import compute_metrics, format_report
+
+    days = 14
+    json_mode = False
+    for arg in sys.argv[2:]:
+        if arg.startswith("--days="):
+            days = int(arg.split("=", 1)[1])
+        elif arg == "--json":
+            json_mode = True
+
+    metrics = await compute_metrics(days=days)
+
+    if json_mode:
+        print(json.dumps(metrics.to_dict(), indent=2))
+    else:
+        print()
+        print(format_report(metrics))
+        print()
+
+
 async def cmd_balance():
     """Check and display AI provider balance."""
     from src.balance import check_balance
@@ -232,6 +255,8 @@ Usage:
   python main.py status     Show current state and recent analyses
   python main.py balance    Check AI provider balance
   python main.py feeds      Check Oksskolten feed health (fetch errors)
+  python main.py dedup-metrics [--days=14] [--json]
+                            Show semantic dedup shadow-log metrics
 """)
 
 
@@ -248,6 +273,7 @@ async def main():
         "status": cmd_status,
         "balance": cmd_balance,
         "feeds": cmd_feeds,
+        "dedup-metrics": cmd_dedup_metrics,
     }
 
     if command in commands:

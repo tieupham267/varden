@@ -76,6 +76,15 @@ def oksskolten_db(tmp_path):
             language TEXT
         )
     """)
+    conn.execute("""
+        CREATE TABLE article_similarities (
+            article_id    INTEGER NOT NULL,
+            similar_to_id INTEGER NOT NULL,
+            score         REAL NOT NULL DEFAULT 0,
+            created_at    TEXT NOT NULL DEFAULT (datetime('now')),
+            PRIMARY KEY (article_id, similar_to_id)
+        )
+    """)
 
     conn.execute("INSERT INTO feeds VALUES (1, 'BleepingComputer')")
     conn.execute("INSERT INTO feeds VALUES (2, 'The Hacker News')")

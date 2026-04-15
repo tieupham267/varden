@@ -58,6 +58,30 @@ async def init_state_db():
                 error_count INTEGER,
                 alerted_at TEXT NOT NULL
             );
+
+            CREATE TABLE IF NOT EXISTS dedup_shadow_log (
+                article_id INTEGER PRIMARY KEY,
+                matched_article_id INTEGER,
+                dice_score REAL,
+                would_merge INTEGER,
+                matched_already_analyzed INTEGER,
+                relevance_score INTEGER,
+                severity TEXT,
+                cves_json TEXT,
+                matched_relevance_score INTEGER,
+                matched_severity TEXT,
+                matched_cves_json TEXT,
+                audit_label TEXT,
+                audit_note TEXT,
+                created_at TEXT NOT NULL
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_shadow_created
+                ON dedup_shadow_log(created_at);
+            CREATE INDEX IF NOT EXISTS idx_shadow_would_merge
+                ON dedup_shadow_log(would_merge);
+            CREATE INDEX IF NOT EXISTS idx_shadow_audit
+                ON dedup_shadow_log(audit_label);
         """)
         await db.commit()
 
@@ -189,3 +213,81 @@ async def clear_feed_alert(feed_id: int) -> None:
             (feed_id,),
         )
         await db.commit()
+
+
+# ── Dedup shadow logging (Phase 0) ──────────────────────────────────
+
+
+async def get_analysis(article_id: int) -> Optional[dict]:
+    """Retrieve previous analysis for an article, or None."""
+    async with aiosqlite.connect(STATE_DB) as db:
+        db.row_factory = aiosqlite.Row
+        cursor = await db.execute(
+            "SELECT * FROM analyzed_articles WHERE oksskolten_id = ?",
+            (article_id,),
+        )
+        row = await cursor.fetchone()
+        return dict(row) if row else None
+
+
+async def log_shadow_decision(
+    article_id: int,
+    matched_article_id: Optional[int],
+    dice_score: Optional[float],
+    would_merge: bool,
+    matched_already_analyzed: bool,
+    relevance_score: int,
+    severity: str,
+    cves: list[str],
+    matched_relevance_score: Optional[int] = None,
+    matched_severity: Optional[str] = None,
+    matched_cves: Optional[list[str]] = None,
+) -> None:
+    """Record a dedup shadow decision. Called after AI analysis.
+
+    Does not affect pipeline behavior — pure observability for Phase 0.
+    """
+    async with aiosqlite.connect(STATE_DB) as db:
+        await db.execute(
+            """INSERT OR REPLACE INTO dedup_shadow_log
+               (article_id, matched_article_id, dice_score, would_merge,
+                matched_already_analyzed, relevance_score, severity, cves_json,
+                matched_relevance_score, matched_severity, matched_cves_json,
+                created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                article_id,
+                matched_article_id,
+                dice_score,
+                1 if would_merge else 0,
+                1 if matched_already_analyzed else 0,
+                relevance_score,
+                severity,
+                json.dumps(cves, ensure_ascii=False),
+                matched_relevance_score,
+                matched_severity,
+                json.dumps(matched_cves, ensure_ascii=False) if matched_cves is not None else None,
+                datetime.now(timezone.utc).isoformat(),
+            ),
+        )
+        await db.commit()
+
+
+async def get_shadow_stats(days: int = 14) -> dict:
+    """Aggregate shadow log stats for metrics computation."""
+    async with aiosqlite.connect(STATE_DB) as db:
+        db.row_factory = aiosqlite.Row
+        cursor = await db.execute(
+            """SELECT
+                 COUNT(*) AS total,
+                 SUM(CASE WHEN matched_article_id IS NOT NULL THEN 1 ELSE 0 END) AS with_match,
+                 SUM(CASE WHEN would_merge = 1 THEN 1 ELSE 0 END) AS would_merge_count,
+                 SUM(CASE WHEN audit_label = 'correct' THEN 1 ELSE 0 END) AS audit_correct,
+                 SUM(CASE WHEN audit_label = 'false_merge' THEN 1 ELSE 0 END) AS audit_false,
+                 SUM(CASE WHEN audit_label IS NOT NULL THEN 1 ELSE 0 END) AS audit_total
+               FROM dedup_shadow_log
+               WHERE created_at >= datetime('now', ? || ' days')""",
+            (f"-{days}",),
+        )
+        row = await cursor.fetchone()
+        return dict(row) if row else {}

@@ -14,6 +14,7 @@ import os
 
 from src.ai_analyzer import AIAnalyzer
 from src.balance import check_and_alert as check_balance_alert
+from src.dedup import record_shadow_decision
 from src.feed_health import check_and_alert as check_feed_health
 from src.notifier import dispatch_alert
 from src.source import OksskoltenSource
@@ -93,6 +94,9 @@ class Pipeline:
             # Save result
             await save_analysis(article, analysis)
             stats["analyzed"] += 1
+
+            # Shadow-log dedup decision (Phase 0, observability only)
+            await record_shadow_decision(article, analysis)
 
             score = analysis.get("relevance_score", 0)
             sev = analysis.get("severity", "info").lower()
