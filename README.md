@@ -38,7 +38,11 @@ Oksskolten does RSS fetching, dedup, and full-text extraction better than most t
 
 ### 1. Configure your company profile
 
-Edit `config/company_profile.yaml` — this is the most important file. The AI uses it to decide what's relevant to YOU.
+```bash
+cp config/company_profile.example.yaml config/company_profile.yaml
+```
+
+Edit `config/company_profile.yaml` — this is the most important file. The AI uses it to decide what's relevant to YOU. The real file is gitignored so your company-specific details don't get pushed.
 
 ```yaml
 tech_stack:
@@ -58,7 +62,7 @@ cp .env.example .env
 
 Minimum required:
 - `ANTHROPIC_API_KEY` (or DeepSeek / OpenAI-compatible equivalent)
-- `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` (or Slack webhook)
+- `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` (or Slack webhook) — see [How to get Telegram Bot Chat ID](https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a) for private chats, channels, groups, and topic IDs
 
 ### 3. Run alongside Oksskolten
 

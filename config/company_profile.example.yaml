@@ -1,5 +1,5 @@
 # Company Profile — used by AI to determine article relevance
-# Edit this file to match your actual environment.
+# Copy this file to company_profile.yaml and edit to match your actual environment.
 # The more specific, the better the AI can score relevance.
 
 company:

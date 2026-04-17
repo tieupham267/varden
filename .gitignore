@@ -1,4 +1,5 @@
 .env
+config/company_profile.yaml
 data/
 __pycache__/
 *.pyc
