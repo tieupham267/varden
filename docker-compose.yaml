@@ -53,6 +53,12 @@ services:
       # Override path inside container
       - OKSSKOLTEN_DB_PATH=/oksskolten-data/oksskolten.db
     command: ["daemon"]
+    healthcheck:
+      test: ["CMD", "python", "main.py", "healthcheck", "--no-live", "--json"]
+      interval: 5m
+      timeout: 15s
+      retries: 3
+      start_period: 30s
     logging:
       driver: "json-file"
       options:

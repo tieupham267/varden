@@ -36,6 +36,42 @@ logging.basicConfig(
 logger = logging.getLogger("sidecar")
 
 
+async def _run_startup_healthcheck():
+    """Run healthcheck on daemon startup; exit if FAIL_FAST and any check failed."""
+    from src.healthcheck import (
+        format_report_text,
+        healthcheck_fail_fast_enabled,
+        healthcheck_on_startup_enabled,
+        run_healthcheck,
+    )
+    from src.health_checks.types import CheckStatus
+
+    if not healthcheck_on_startup_enabled():
+        logger.info("Startup healthcheck disabled (HEALTHCHECK_ON_STARTUP=false)")
+        return
+
+    logger.info("Running startup healthcheck...")
+    report = await run_healthcheck(live=True)
+    logger.info(
+        "Healthcheck finished: overall=%s exit_code=%d duration_ms=%d",
+        report.overall_status.value,
+        report.exit_code,
+        report.duration_ms,
+    )
+    # Always log the full table at info level for operator visibility.
+    for line in format_report_text(report, color=False).splitlines():
+        logger.info("  %s", line)
+
+    if (
+        report.overall_status == CheckStatus.FAIL
+        and healthcheck_fail_fast_enabled()
+    ):
+        logger.error(
+            "Startup healthcheck failed and HEALTHCHECK_FAIL_FAST=true — aborting"
+        )
+        sys.exit(1)
+
+
 async def cmd_run():
     """Run one cycle and exit."""
     await init_state_db()
@@ -46,6 +82,9 @@ async def cmd_run():
 async def cmd_daemon():
     """Run as scheduled daemon."""
     await init_state_db()
+
+    await _run_startup_healthcheck()
+
     interval = int(os.getenv("POLL_INTERVAL_MINUTES", "15"))
     pipeline = Pipeline()
 
@@ -211,6 +250,39 @@ async def cmd_dedup_metrics():
         print()
 
 
+async def cmd_healthcheck():
+    """Validate env + live connectivity; return meaningful exit code."""
+    from src.healthcheck import (
+        format_report_json,
+        format_report_text,
+        run_healthcheck,
+    )
+
+    live = True
+    json_mode = False
+    only: frozenset[str] | None = None
+
+    for arg in sys.argv[2:]:
+        if arg == "--no-live":
+            live = False
+        elif arg == "--json":
+            json_mode = True
+        elif arg.startswith("--only="):
+            prefixes = [p.strip() for p in arg.split("=", 1)[1].split(",") if p.strip()]
+            only = frozenset(prefixes) if prefixes else None
+
+    report = await run_healthcheck(live=live, only=only)
+
+    if json_mode:
+        print(format_report_json(report))
+    else:
+        print()
+        print(format_report_text(report))
+        print()
+
+    sys.exit(report.exit_code)
+
+
 async def cmd_balance():
     """Check and display AI provider balance."""
     from src.balance import check_balance
@@ -257,6 +329,8 @@ Usage:
   python main.py feeds      Check Oksskolten feed health (fetch errors)
   python main.py dedup-metrics [--days=14] [--json]
                             Show semantic dedup shadow-log metrics
+  python main.py healthcheck [--no-live] [--json] [--only=env,ai_provider]
+                            Validate env + live connectivity to all services
 """)
 
 
@@ -274,6 +348,7 @@ async def main():
         "balance": cmd_balance,
         "feeds": cmd_feeds,
         "dedup-metrics": cmd_dedup_metrics,
+        "healthcheck": cmd_healthcheck,
     }
 
     if command in commands:

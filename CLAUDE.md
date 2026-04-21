@@ -16,6 +16,7 @@ python main.py daemon       # Scheduled polling (production)
 python main.py digest       # Email digest of last 24h
 python main.py status       # Show recent analyses + balance
 python main.py balance      # Check AI provider balance
+python main.py healthcheck  # Validate env + live connectivity
 
 # Docker
 docker compose up -d
@@ -53,6 +54,7 @@ RSS feeds → Oksskolten (fetch/dedup/extract)
 - **`src/notifier.py`** — Telegram (HTML), Slack (blocks), Email (SMTP/HTML digest). All three can run simultaneously.
 - **`src/balance.py`** — AI provider balance monitoring. Checks remaining credits (DeepSeek supported), alerts via Telegram when low. Runs after each pipeline cycle.
 - **`src/pipeline.py`** — Orchestrator tying source → analyzer → state → notifier → balance check.
+- **`src/healthcheck.py` + `src/health_checks/`** — Startup and on-demand validation of `.env` + live probes (AI provider `/models`, Telegram `getMe`, Slack webhook ping, real SMTP send, Oksskolten SQLite schema). Gated by `HEALTHCHECK_ON_STARTUP` / `HEALTHCHECK_FAIL_FAST`. Secrets scrubbed from all output via `scrub_secrets()`.
 
 ## Configuration
 
