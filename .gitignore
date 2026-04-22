@@ -1,5 +1,8 @@
 .env
 config/company_profile.yaml
+config/company_profile.generated.yaml
+config/inputs/*
+!config/inputs/README.md
 data/
 __pycache__/
 *.pyc

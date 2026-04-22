@@ -17,6 +17,7 @@ python main.py digest       # Email digest of last 24h
 python main.py status       # Show recent analyses + balance
 python main.py balance      # Check AI provider balance
 python main.py healthcheck  # Validate env + live connectivity
+python main.py profile-gen  # Build company_profile.yaml from config/inputs/*
 
 # Docker
 docker compose up -d
@@ -26,7 +27,9 @@ docker exec varden python main.py balance   # Check balance
 docker compose logs -f varden             # Monitor logs
 ```
 
-No test suite exists yet.
+Tests live under `tests/` (pytest, asyncio). Run all: `pytest`. Coverage:
+`pytest --cov=src --cov-report=term-missing`. Tests stub out all external I/O —
+no real LLM, HTTP, or SMTP calls.
 
 ## Architecture
 
@@ -55,6 +58,7 @@ RSS feeds → Oksskolten (fetch/dedup/extract)
 - **`src/balance.py`** — AI provider balance monitoring. Checks remaining credits (DeepSeek supported), alerts via Telegram when low. Runs after each pipeline cycle.
 - **`src/pipeline.py`** — Orchestrator tying source → analyzer → state → notifier → balance check.
 - **`src/healthcheck.py` + `src/health_checks/`** — Startup and on-demand validation of `.env` + live probes (AI provider `/models`, Telegram `getMe`, Slack webhook ping, real SMTP send, Oksskolten SQLite schema). Gated by `HEALTHCHECK_ON_STARTUP` / `HEALTHCHECK_FAIL_FAST`. Secrets scrubbed from all output via `scrub_secrets()`.
+- **`src/profile_generator.py`** — Ingests unstructured company/asset-inventory docs from `config/inputs/` (md/txt/yaml/json/csv), calls the configured LLM via `ai_providers.dispatch()`, and emits `config/company_profile.generated.yaml`. LLM-suggested `watched_threat_actors` and `priority_techniques` are inferred from sector/geo — **must be reviewed manually** before use.
 
 ## Configuration
 

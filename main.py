@@ -283,6 +283,41 @@ async def cmd_healthcheck():
     sys.exit(report.exit_code)
 
 
+async def cmd_profile_gen():
+    """Generate company_profile.yaml from description files via LLM."""
+    from pathlib import Path
+
+    from src.profile_generator import (
+        DEFAULT_INPUT_DIR,
+        DEFAULT_OUTPUT,
+        generate_profile,
+        save_profile,
+    )
+
+    input_dir = DEFAULT_INPUT_DIR
+    output = DEFAULT_OUTPUT
+    overwrite = False
+    for arg in sys.argv[2:]:
+        if arg.startswith("--input-dir="):
+            input_dir = Path(arg.split("=", 1)[1])
+        elif arg.startswith("--output="):
+            output = Path(arg.split("=", 1)[1])
+        elif arg == "--overwrite":
+            overwrite = True
+
+    try:
+        profile = await generate_profile(input_dir)
+        path = save_profile(profile, output, overwrite=overwrite)
+    except (FileNotFoundError, FileExistsError, ValueError) as exc:
+        logger.error("profile-gen failed: %s", exc)
+        sys.exit(1)
+
+    print(f"\n✓ Generated: {path}")
+    print(
+        "  Review the file and rename to config/company_profile.yaml when ready.\n"
+    )
+
+
 async def cmd_balance():
     """Check and display AI provider balance."""
     from src.balance import check_balance
@@ -331,6 +366,8 @@ Usage:
                             Show semantic dedup shadow-log metrics
   python main.py healthcheck [--no-live] [--json] [--only=env,ai_provider]
                             Validate env + live connectivity to all services
+  python main.py profile-gen [--input-dir=DIR] [--output=FILE] [--overwrite]
+                            Generate company_profile.yaml from config/inputs/*
 """)
 
 
@@ -349,6 +386,7 @@ async def main():
         "feeds": cmd_feeds,
         "dedup-metrics": cmd_dedup_metrics,
         "healthcheck": cmd_healthcheck,
+        "profile-gen": cmd_profile_gen,
     }
 
     if command in commands:
